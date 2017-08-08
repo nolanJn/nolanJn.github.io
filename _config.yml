@@ -12,7 +12,7 @@ github_repo: "https://github.com/nolanJn/nolanJn.github.io.git" # you code repos
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "身体和灵魂，一个都不能落下!"
-sidebar-avatar: img/avatar-by.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: about/img/avatar-by.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
