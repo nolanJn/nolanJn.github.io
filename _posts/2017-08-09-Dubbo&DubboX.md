@@ -1,12 +1,12 @@
-## Dubbo & Dubbox ##
 
-### 初识Dubbo ###
+
+## 初识Dubbo ###
 **背景** ：随着互联网的发展，应用服务的规模不断扩大，常规的垂直服务架构已经无法应对，分布式服务架构以及流动计算架构势在必行，急需一个治理系统取保架构有条不紊的演进。
 
 **认识**：Dubbo是阿里巴巴提供的开源的一个分布式服务框架，致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。
 
 
-### Dubbo工作原理-主体架构 ###
+## Dubbo工作原理-主体架构 ###
 
 ![dubbo架构设计](https://github.com/nolanJn/nolanJn.github.io/blob/master/img/dubbo_job_lc.png)
 
