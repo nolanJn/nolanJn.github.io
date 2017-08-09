@@ -8,7 +8,7 @@
 
 ## Dubbo工作原理-主体架构 ###
 
-![dubbo架构设计](https://github.com/nolanJn/nolanJn.github.io/blob/master/img/dubbo_job_lc.png)
+![dubbo架构设计](/img/dubbo_job_lc.png)
 
 Enjoy first-class Markdown support with easy access to  Markdown syntax and convenient keyboard shortcuts.
 
