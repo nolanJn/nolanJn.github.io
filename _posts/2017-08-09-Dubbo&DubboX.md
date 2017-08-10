@@ -18,7 +18,7 @@ tags:
 
 ## 二、Dubbo工作原理-主体架构 ##
 
-![dubbo架构设计](img/dubbo_job_lc.jpg)
+![dubbo架构设计](/img/dubbo_job_lc.jpg)
 
 ### Dubbo工作原理-核心部分 ###
 
@@ -33,7 +33,7 @@ tags:
 
 ### Dubbo功能特性-RPC功能 ###
 
-![dubbo RPC功能](img/dubbo_rpc.jpg)
+![dubbo RPC功能](/img/dubbo_rpc.jpg)
 
 ### Dubbo功能特性-健壮性 ###
 
@@ -70,7 +70,7 @@ Dubbo采用全Spring配置方式，透明化接入应用，对应用没有任何
 
 ![接口实现](/img/dubbo_jksx.jpg)
 ### 服务提供者-Spring配置声明暴露服务 ###
-![暴露服务](/img/dubbo_blfw.jpg)
+![暴露服务](/img/dubbo_plfw.jpg)
 ### 服务提供者-加载配置 ###
 ![启动服务](/img/dubbo_qdfw.jpg)
 ### 服务消费者-通过spring配置引用远程服务 ###
