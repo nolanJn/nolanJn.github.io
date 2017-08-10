@@ -33,3 +33,7 @@ Temporary Items
 
 # debug file
 _site
+.idea/workspace.xml
+js/animatescroll.min.js
+js/hux-blog.min.js
+portfolio/js/modernizr.custom.js

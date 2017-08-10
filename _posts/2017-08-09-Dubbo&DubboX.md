@@ -1,35 +1,68 @@
-## Dubbo & Dubbox ##
 
-### 初识Dubbo ###
+## 一、初识Dubbo ##
 **背景** ：随着互联网的发展，应用服务的规模不断扩大，常规的垂直服务架构已经无法应对，分布式服务架构以及流动计算架构势在必行，急需一个治理系统取保架构有条不紊的演进。
 
 **认识**：Dubbo是阿里巴巴提供的开源的一个分布式服务框架，致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。
 
 
-### Dubbo工作原理-主体架构 ###
+## 二、Dubbo工作原理-主体架构 ##
 
-![dubbo架构设计](image/dubbo_job_lc.png)
+![dubbo架构设计](img/dubbo_job_lc.png)
 
-Enjoy first-class Markdown support with easy access to  Markdown syntax and convenient keyboard shortcuts.
+### Dubbo工作原理-核心部分 ###
 
-Give them a try:
+**远程通讯**：提供对多种基于长连接的NIO框架抽象封装，包含多种线程
+模型，序列化，以及“请求-响应”模式的信息交换方式。
 
-- **Bold** (`Ctrl+B`) and *Italic* (`Ctrl+I`)
-- Quotes (`Ctrl+Q`)
-- Code blocks (`Ctrl+K`)
-- Headings 1, 2, 3 (`Ctrl+1`, `Ctrl+2`, `Ctrl+3`)
-- Lists (`Ctrl+U` and `Ctrl+Shift+O`)
+**集群容错**：提供基于接口方法的透明远程过程调用，包括多协议支持，
+以及软负载均衡，失败容错，地址路由，动态配置等集群支持。
 
-### See your changes instantly with LivePreview ###
+**自动发现**：基于注册中心目录服务，试服务消费方能动态的查找服务提
+供方，使地址透明，使服务提供方可以平滑增加或减少机器。
 
-Don't guess if your [hyperlink syntax](http://markdownpad.com) is correct; LivePreview will show you exactly what your document looks like every time you press a key.
+### Dubbo功能特性-RPC功能 ###
 
-### Make it your own ###
+![dubbo RPC功能](img/dubbo_rpc.png)
 
-Fonts, color schemes, layouts and stylesheets are all 100% customizable so you can turn MarkdownPad into your perfect editor.
+### Dubbo功能特性-健壮性 ###
 
-### A robust editor for advanced Markdown users ###
+1、监控中心宕掉不影响使用，只是丢失部分采样数据
 
-MarkdownPad supports multiple Markdown processing engines, including standard Markdown, Markdown Extra (with Table support) and GitHub Flavored Markdown.
+2、数据库宕掉后，注册中心仍能通过缓存提供服务列表查询，但不能注册新服务
 
-With a tabbed document interface, PDF export, a built-in image uploader, session management, spell check, auto-save, syntax highlighting and a built-in CSS management interface, there's no limit to what you can do with MarkdownPad.
+3、注册中心对等集群，任意一台宕掉后，将自动切换到另一台
+
+4、注册中心全部宕掉后，服务提供者和服务消费者仍能通过本地缓存通讯
+
+5、服务提供者无状态，任意一台宕掉后，不影响使用
+
+6、服务提供者全部宕掉后，服务消费者应用将无法使用，并无限次重连等待服务提供者恢复
+
+### Dubbo功能特性-伸缩性 ###
+
+注册中心为对等集群，可动态增加机器部署实例，所有客户端将自动发现新的注册中心
+
+服务提供者无状态，可动态增加机器部署实例，注册中心将推送新的服务提供者信息给消费者
+
+## 三、Dubbo快速入门案例 ##
+
+### 快速启动 ###
+Dubbo采用全Spring配置方式，透明化接入应用，对应用没有任何API侵入，只需用Spring加载Dubbo的配置即可，Dubbo基于Spring的Schema扩展进行加载。
+
+如果不想使用Spring配置，而希望通过API的方式进行调用（不推荐）
+### 服务提供者-定义服务接口 ###
+(注：该接口需单独打包，在服务提供方和消费方共享)
+
+![定义接口](/img/dubbo_dyjk.png)
+### 服务提供者-实现接口 ###
+(注：对服务消费方隐藏实现)
+
+![接口实现](/img/dubbo_jksx.png)
+### 服务提供者-Spring配置声明暴露服务 ###
+![暴露服务](/img/dubbo_blfw.png)
+### 服务提供者-加载配置 ###
+![启动服务](/img/dubbo_qdfw.png)
+### 服务消费者-通过spring配置引用远程服务 ###
+![消费服务](/img/dubbo_xffw.png)
+
+## 四、服务治理 ##
