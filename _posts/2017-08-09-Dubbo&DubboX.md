@@ -75,7 +75,7 @@ Dubbo采用全Spring配置方式，透明化接入应用，对应用没有任何
 
 ![服务治理](/img/dubbo_fwzl.png)
 
-###各节点关系###
+### 各节点关系 ###
 
 这里的Invoker是Provider的一个可调用Service的抽象，Invoker封装了Provider地址及Service接口信息。
 
@@ -87,7 +87,7 @@ Router负责从多个Invoker中按路由规则选出子集，比如读写分离�
 
 LoadBalance负责从多个Invoker中选出具体的一个用于本次调用，选的过程包含了负载均衡算法，调用失败后，需要重选。
 
-###集群容错模式###
+### 集群容错模式 ###
 
 **Failover Cluster**
 失败自动切换，当出现失败，重试其它服务器。(缺省)
@@ -114,4 +114,94 @@ LoadBalance负责从多个Invoker中选出具体的一个用于本次调用，�
 **Broadcast Cluster**
 广播调用所有提供者，逐个调用，任意一台报错则报错。(2.1.0开始支持)
 通常用于通知所有提供者更新缓存或日志等本地资源信息。
+
+### 负载均衡 ###
+
+**Random LoadBalance**
+随机，按权重设置随机概率。
+在一个截面上碰撞的概率高，但调用量越大分布越均匀，而且按概率使用权重后也比较均匀，有利于动态调整提供者权重。
+
+**RoundRobin LoadBalance**
+轮循，按公约后的权重设置轮循比率。
+存在慢的提供者累积请求问题，比如：第二台机器很慢，但没挂，当请求调到第二台时就卡在那，久而久之，所有请求都卡在调到第二台上。
+
+**LeastActive LoadBalance**
+最少活跃调用数，相同活跃数的随机，活跃数指调用前后计数差。
+使慢的提供者收到更少请求，因为越慢的提供者的调用前后计数差会越大。
+
+**ConsistentHash LoadBalance**
+一致性Hash，相同参数的请求总是发到同一提供者。
+当某一台提供者挂时，原本发往该提供者的请求，基于虚拟节点，平摊到其它提供者，不会引起剧烈变动。
+算法参见：http://en.wikipedia.org/wiki/Consistent_hashing。
+缺省只对第一个参数Hash，如果要修改，请配置<dubbo:parameter key="hash.arguments" value="0,1" />
+缺省用160份虚拟节点，如果要修改，请配置<dubbo:parameter key="hash.nodes" value="320" />
+
+## 五、RPC ##
+
+RPC是指远程过程调用，也就是说两台服务器A，B，一个应用部署在A服务器上，想要调用B服务器上提供的函数/方法，由于不在一个内存空间，不能直接调用，需要通过网络来表达调用的语义和传达调用的数据。
+
+### RPC核心 ###
+
+动态代理和Socket
+
+### RPC性能 ###
+
+**传输**：用什么样的通道将数据发送给对方，BIO、NIO或者AIO，IO模型在很大程度上决定了框架的性能。 
+      I/O调度模型：同步阻塞I/O（BIO）还是非阻塞I/O（NIO）。
+
+**协议**：采用什么样的通信协议，HTTP或者内部私有协议。协议的选择不同，性能模型也不同。相比于公有协议，内部私有协议的性能通常可以被设计的更优。 
+      序列化框架的选择：文本协议、二进制协议或压缩二进制协议。
+
+**线程**：数据报如何读取？读取之后的编解码在哪个线程进行，编解码后的消息如何派发，Reactor线程模型的不同，对性能的影响也非常大。 
+      线程调度模型：串行调度还是并行调度，锁竞争还是无锁化算法。
+
+### 分布式RPC框架有哪些 ###
+
+**Dubbo** 
+Motan是新浪微博开源的一个Java 框架。它诞生的比较晚，起于2013年，2016年5月开源。
+
+**Motan** 在微博平台中已经广泛应用，每天为数百个服务完成近千亿次的调用。
+
+**rpcx** 是Go语言生态圈的Dubbo， 比Dubbo更轻量，实现了Dubbo的许多特性，借助于Go语言优秀的并发特性和简洁语法，可以使用较少的代码实现分布式的RPC服务。
+
+**gRPC** 是Google开发的高性能、通用的开源RPC框架，其由Google主要面向移动应用开发并基于HTTP/2协议标准而设计，基于ProtoBuf(Protocol Buffers)序列化协议开发，且支持众多开发语言。本身它不是分布式的，所以要实现上面的框架的功能需要进一步的开发。
+thrift是Apache的一个跨语言的高性能的服务框架，也得到了广泛的应用。
+
+## 六、DubboX新特性 ##
+
+支持REST风格远程调用（HTTP + JSON/XML)：基于非常成熟的JBoss RestEasy框架，在dubbo中实现了REST风格（HTTP + JSON/XML）的远程调用，以显著简化企业内部的跨语言交互，同时显著简化企业对外的Open API、无线API甚至AJAX服务端等等的开发。事实上，这个REST调用也使得Dubbo可以对当今特别流行的“微服务”架构提供基础性支持。 另外，REST调用也达到了比较高的性能，在基准测试下，HTTP + JSON与Dubbo 2.x默认的RPC协议（即TCP + Hessian2二进制序列化）之间只有1.5倍左右的差距，详见文档中的基准测试报告。
+
+支持基于Kryo和FST的Java高效序列化实现：基于当今比较知名的Kryo和FST高性能序列化库，为Dubbo默认的RPC协议添加新的序列化实现，并优化调整了其序列化体系，比较显著的提高了Dubbo RPC的性能，详见文档中的基准测试报告。
+
+支持基于Jackson的JSON序列化：基于业界应用最广泛的Jackson序列化库，为Dubbo默认的RPC协议添加新的JSON序列化实现。
+
+支持基于嵌入式Tomcat的HTTP remoting体系
+
+升级Spring：将dubbo中Spring由2.x升级到目前最常用的3.x版本，减少版本冲突带来的麻烦。
+
+升级ZooKeeper客户端：将dubbo中的zookeeper客户端升级到最新的版本，以修正老版本中包含的bug。
+
+支持完全基于Java代码的Dubbo配置：基于Spring的Java Config，实现完全无XML的纯Java代码方式来配置dubbo
+
+调整Demo应用：暂时将dubbo的demo应用调整并改写以主要演示REST功能、Dubbo协议的新序列化方式、基于Java代码的Spring配置等等。
+修正了dubbo的bug 包括配置、序列化、管理界面等等的bug。
+
+### 快速入门 ###
+
+![](/img/dubbox_1.png)
+
+![](/img/dubbox_2.png)
+
+![](/img/dubbox_3.png)
+
+### Dubbox使用场景 ###
+
+非dubbo的消费端调用dubbo的REST服务（non-dubbo --> dubbo）
+
+dubbo消费端调用dubbo的REST服务 （dubbo --> dubbo）
+
+dubbo的消费端调用非dubbo的REST服务 （dubbo --> non-dubbo）
+
+## 结束 ## 
+
 
